@@ -124,7 +124,6 @@ function M.highlight_matches(buf_nr, labels_map, pattern, show_labels)
 		if show_labels ~= false then
 			vim.api.nvim_buf_set_extmark(buf_nr, namespace, lnum, label_pos, {
 				priority = 1200 + buf_nr,
-				-- virt_text = { { label, label == focused_label and "SjFocusedLabel" or label_highlight } },
 				virt_text = { { label, label_highlight } },
 				virt_text_pos = "overlay",
 			})
@@ -134,18 +133,16 @@ function M.highlight_matches(buf_nr, labels_map, pattern, show_labels)
 	vim.cmd.redraw()
 end
 
-function M.show_feedbacks(buf_nr, pattern, matches, labels_map)
+function M.show_feedbacks(buf_nr, pattern, labels_map)
 	buf_nr = valid_buf_nr(buf_nr) and buf_nr or 0
 	apply_overlay(buf_nr)
 	M.highlight_matches(buf_nr, labels_map, pattern, true)
-	-- echo_pattern(pattern, matches)
 	vim.cmd("redraw!")
 end
 
 function M.clear_feedbacks(buf_nr)
 	buf_nr = valid_buf_nr(buf_nr) and buf_nr or 0
 	clear_highlights(buf_nr)
-	-- echo_pattern(nil, {})
 	vim.cmd("redraw!")
 end
 

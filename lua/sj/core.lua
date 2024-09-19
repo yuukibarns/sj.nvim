@@ -298,7 +298,7 @@ function M.get_user_input()
 
 	if need_looping == true then
 		labels_map = M.create_labels_map(labels, matches, false)
-		ui.show_feedbacks(buf_nr, pattern, matches, labels_map)
+		ui.show_feedbacks(buf_nr, pattern, labels_map)
 	end
 
 	while need_looping == true do
@@ -332,7 +332,7 @@ function M.get_user_input()
 				break
 			end
 			labels_map = {}
-			ui.show_feedbacks(buf_nr, user_input, {}, {})
+			ui.show_feedbacks(buf_nr, user_input, {})
 		end
 
 		if #matches == 1 and cache.options.auto_jump then
@@ -341,7 +341,7 @@ function M.get_user_input()
 		end
 
 		if #matches > 0 then
-			ui.show_feedbacks(buf_nr, pattern, matches, labels_map)
+			ui.show_feedbacks(buf_nr, pattern, labels_map)
 		end
 	end
 

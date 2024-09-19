@@ -39,16 +39,12 @@ local sj = require("sj")
 sj.setup()
 
 vim.keymap.set("n", "s", sj.run)
-vim.keymap.set("n", "<A-,>", sj.prev_match)
-vim.keymap.set("n", "<A-;>", sj.next_match)
-vim.keymap.set("n", "<localleader>s", sj.redo)
 ```
 
 As soon as you use the keymap assigned to `sj.run()` and start typing the pattern :
 
 - the highlights in the buffer will change ;
 - all matches will be highlighted and will have a label assigned to them ;
-- the pattern is displayed in the command line.
 
 While searching, you can use the keymaps below :
 
@@ -56,15 +52,6 @@ While searching, you can use the keymaps below :
 | ---------- | ----------------------------- |
 | `<Escape>` | cancel the search             |
 | `<BS>`     | delete the previous character |
-
-**Notes** :
-
-- When there are no matches, the pattern in the cmdline will have a different color ;
-- When you use `max_pattern_length` and you reach that length limit, the labels color will
-  change to indicate that the next key should be for a label and not for the pattern ;
-  (When reaching this limit, no need to type `:` before the label)
-- You can use an empty separator `separator = ""` which will avoid the need to type an
-  extra character but will reduce the number of available labels.
 
 ### Configuration
 
