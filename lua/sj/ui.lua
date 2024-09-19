@@ -79,21 +79,21 @@ local function apply_overlay(buf_nr, redraw)
 	end
 end
 
-local function echo_pattern(pattern, matches)
-	local highlight = ""
-	if pattern ~= nil and #pattern > 0 and type(matches) == "table" and #matches < 1 then
-		highlight = "SjNoMatches"
-	end
-
-	if pattern ~= nil and type(cache.options.prompt_prefix) == "string" then
-		pattern = cache.options.prompt_prefix .. pattern
-	else
-		pattern = ""
-	end
-
-	vim.api.nvim_echo({ { pattern, highlight } }, false, {})
-	vim.cmd("redraw!")
-end
+-- local function echo_pattern(pattern, matches)
+-- 	local highlight = ""
+-- 	if pattern ~= nil and #pattern > 0 and type(matches) == "table" and #matches < 1 then
+-- 		highlight = "SjNoMatches"
+-- 	end
+--
+-- 	if pattern ~= nil and type(cache.options.prompt_prefix) == "string" then
+-- 		pattern = cache.options.prompt_prefix .. pattern
+-- 	else
+-- 		pattern = ""
+-- 	end
+--
+-- 	vim.api.nvim_echo({ { pattern, highlight } }, false, {})
+-- 	vim.cmd("redraw!")
+-- end
 
 local function win_show_indicators(_, buf_nr, first_line, last_line, label)
 	vim.api.nvim_buf_set_extmark(buf_nr, namespace, first_line - 1, 0, {
@@ -179,7 +179,8 @@ function M.highlight_matches(buf_nr, labels_map, pattern, show_labels, focused_l
 		if show_labels ~= false then
 			vim.api.nvim_buf_set_extmark(buf_nr, namespace, lnum, label_pos, {
 				priority = 1200 + buf_nr,
-				virt_text = { { label, label == focused_label and "SjFocusedLabel" or label_highlight } },
+				-- virt_text = { { label, label == focused_label and "SjFocusedLabel" or label_highlight } },
+				virt_text = { { label, label_highlight } },
 				virt_text_pos = "overlay",
 			})
 		end
@@ -199,7 +200,7 @@ end
 function M.clear_feedbacks(buf_nr)
 	buf_nr = valid_buf_nr(buf_nr) and buf_nr or 0
 	clear_highlights(buf_nr)
-	echo_pattern(nil, {})
+	-- echo_pattern(nil, {})
 	vim.cmd("redraw!")
 end
 
