@@ -192,7 +192,8 @@ function M.show_feedbacks(buf_nr, pattern, matches, labels_map, focused_label)
 	buf_nr = valid_buf_nr(buf_nr) and buf_nr or 0
 	apply_overlay(buf_nr)
 	M.highlight_matches(buf_nr, labels_map, pattern, true, focused_label)
-	echo_pattern(pattern, matches)
+	-- echo_pattern(pattern, matches)
+	vim.cmd("redraw!")
 end
 
 function M.clear_feedbacks(buf_nr)

@@ -465,7 +465,7 @@ function M.get_user_input()
 			pattern = last_matching_pattern
 			labels_map = {}
 			prev_labels_map = {}
-			-- ui.show_feedbacks(buf_nr, user_input, {}, {}, {})
+			ui.show_feedbacks(buf_nr, user_input, {}, {}, {})
 		end
 
 		if #matches == 1 and cache.options.auto_jump then
@@ -478,12 +478,12 @@ function M.get_user_input()
 			if cache.options.search_scope == "buffer" then
 				M.jump_to(matches[labels_slider.pos])
 			end
-			-- ui.show_feedbacks(buf_nr, pattern, matches, labels_map, labels[labels_slider.pos])
+			ui.show_feedbacks(buf_nr, pattern, matches, labels_map, labels[labels_slider.pos])
 		end
 
 		---
 	end
-	-- ui.clear_feedbacks(buf_nr)
+	ui.clear_feedbacks(buf_nr)
 
 	cache.state.last_used_pattern = pattern
 	patterns = update_search_history(patterns, pattern)
