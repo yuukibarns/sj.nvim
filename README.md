@@ -82,10 +82,10 @@ defaults = {
 		--- labels used for each matches. (one-character strings only)
 		-- stylua: ignore
 		labels = {
-			"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-			"n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-			"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+			"a", "s", "d", "f", "g", "h", "j", "k", "l", "q", "w", "e", "r",
+			"t", "y", "u", "i", "o", "p", "z", "x", "c", "v", "b", "n", "m",
+			"A", "S", "D", "F", "G", "H", "J", "K", "L", "Q", "W", "E", "R",
+			"T", "Y", "U", "I", "O", "P", "Z", "X", "C", "V", "B", "N", "M",
 		},
 },
 ```
@@ -131,12 +131,8 @@ match I want.
 For me, one small caveat of the 'jump plugins', is that they generate the labels or 'hint
 keys' based on the cursor position. That is understandable and efficient but within the
 same buffer area, it means that you can have different labels for the same pattern or
-position which make the keys sequence for a jump less predictables. Also, in some
+position which make the keys sequence for a jump less predictable. Also, in some
 contexts, you don't know if you'll have to use a 1, 2 or 3 characters for the label.
 
 By using a search pattern with a 1-character label, you already know all the keys except
 one character for the label.
-
-```
-
-```
