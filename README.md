@@ -1,5 +1,5 @@
-<!-- 
-vim: expandtab tabstop=2 
+<!--
+vim: expandtab tabstop=2
 -->
 
 - [Requirements](#requirements)
@@ -42,7 +42,7 @@ vim.keymap.set("n", "s", sj.run)
 vim.keymap.set("n", "<A-,>", sj.prev_match)
 vim.keymap.set("n", "<A-;>", sj.next_match)
 vim.keymap.set("n", "<localleader>s", sj.redo)
-``` 
+```
 
 As soon as you use the keymap assigned to `sj.run()` and start typing the pattern :
 
@@ -52,21 +52,10 @@ As soon as you use the keymap assigned to `sj.run()` and start typing the patter
 
 While searching, you can use the keymaps below :
 
-| Keymap              | Description                                                      |
-|---------------------|------------------------------------------------------------------|
-| `<Escape>`          | cancel the search                                                |
-| `<Enter>`           | jump to the focused match                                        |
-| `:a`, `:b`, `:c`    | jump to the the match with the label `a`, `b` or `c`             |
-| `<A-,>`, `<A-;>`    | focus the previous or next match                                 |
-| `<C-p>`, `<C-n>`    | select the previous or next pattern                              |
-| `<BS>`              | delete the previous character                                    |
-| `<C-w>`             | delete the previous word                                         |
-| `<C-u>`             | delete the whole pattern                                         |
-| `<A-BS>`            | restore the pattern to the last version having matches           |
-| `<A-q>`             | send the search results to the quickfix list                     |
-
-After the search, you can call `sj.prev_match()` and `sj.next_match()` to jump on the
-previous/next match or `sj.redo()` to redo a search using the last pattern.
+| Keymap     | Description                   |
+| ---------- | ----------------------------- |
+| `<Escape>` | cancel the search             |
+| `<BS>`     | delete the previous character |
 
 **Notes** :
 
@@ -82,63 +71,43 @@ previous/next match or `sj.redo()` to redo a search using the last pattern.
 Here is the default configuration :
 
 ```lua
-local config = {
-  auto_jump = false, -- if true, automatically jump on the sole match
-  forward_search = true, -- if true, the search will be done from top to bottom
-  highlights_timeout = 0, -- if > 0, wait for 'updatetime' + N ms to clear hightlights (sj.prev_match/sj.next_match)
-  inclusive = false, -- if true, the jump target will be included with 'operator-pending' keymaps
-  max_pattern_length = 0, -- if > 0, wait for a label after N characters
-  pattern = "", -- predefined pattern to use at the start of a search
-  pattern_type = "vim", -- how to interpret the pattern (lua_plain, lua, vim, vim_very_magic)
-  preserve_highlights = true, -- if true, create an autocmd to preserve highlights when switching colorscheme
-  prompt_prefix = "", -- if set, the string will be used as a prefix in the command line
-  relative_labels = false, -- if true, labels are ordered from the cursor position, not from the top of the buffer
-  search_scope = "visible_lines", -- (current_line, visible_lines_above, visible_lines_below, visible_lines, buffer)
-  select_window = false, -- if true, ask for a window to jump to before starting the search
-  separator = ":", -- character used to split the user input in <pattern> and <label> (can be empty)
-  stop_on_fail = true, -- if true, the search will stop when a search fails (no matches)
-  update_search_register = false, -- if true, update the search register with the last used pattern
-  use_last_pattern = false, -- if true, reuse the last pattern for next calls
-  use_overlay = true, -- if true, apply an overlay to better identify labels and matches
-  wrap_jumps = vim.o.wrapscan, -- if true, wrap the jumps when focusing previous or next label
+defaults = {
+		auto_jump = false, -- if true, automatically jump on the sole match
+		forward_search = true, -- if true, the search will be done from top to bottom
+		inclusive = true, -- if true, the jump target will be included with 'operator-pending' and 'visual' modes
+		max_pattern_length = 0, -- if > 0, wait for a label after N characters
+		pattern = "", -- predefined pattern to use at the start of a search
+		pattern_type = "vim", -- how to interpret the pattern (lua_plain, lua, vim, vim_very_magic)
+		preserve_highlights = true, -- if true, create an autocmd to preserve highlights when switching colorscheme
+		prompt_prefix = "", -- if set, the string will be used as a prefix in the command line
+		relative_labels = false, -- if true, labels are ordered from the cursor position, not from the top of the buffer
+		search_scope = "visible_lines", -- (current_line, visible_lines_above, visible_lines_below, visible_lines)
+		separator = ":", -- character used to split the user input in <pattern> and <label> (should not be empty)
+		stop_on_fail = true, -- if true, the search will stop when a search fails (no matches), if false, when there are no match type the separator will end the search.
+		use_overlay = true, -- if true, apply an overlay to better identify labels and matches
 
-  --- keymaps used during the search
-  keymaps = { 
-    cancel = "<Esc>", -- cancel the search
-    validate = "<CR>", -- jump to the focused match
-    prev_match = "<A-,>", -- focus the previous match
-    next_match = "<A-;>", -- focus the next match
-    prev_pattern = "<C-p>", -- select the previous pattern while searching
-    next_pattern = "<C-n>", -- select the next pattern while searching
-    ---
-    delete_prev_char = "<BS>", -- delete the previous character
-    delete_prev_word = "<C-w>", -- delete the previous word
-    delete_pattern = "<C-u>", -- delete the whole pattern
-    restore_pattern = "<A-BS>", -- restore the pattern to the last version having matches
-    ---
-    send_to_qflist = "<A-q>", --- send the search results to the quickfix list
-  },
+		--- keymaps used during the search
+		keymaps = {
+			cancel = "<Esc>", -- cancel the search
+			delete_prev_char = "<BS>", -- delete the previous character
+		},
 
-  --- labels used for each matches. (one-character strings only)
-  -- stylua: ignore
-  labels = {
-    "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
-    "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
-    "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
-    "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
-    "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ",", ";", "!",
-  },
-}
+		--- labels used for each matches. (one-character strings only)
+		-- stylua: ignore
+		labels = {
+			"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+			"n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+			"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
+			"N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
+		},
+},
 ```
 
 and here is a configuration sample :
 
-**DISCLAIMER** : This plugin is not intended to replace the native functions of Neovim.
-<br>I do not recommend adding keymaps that replaces `/, ?, f/F, t/T...`.
-
 ```lua
-local sj = require("sj")
-local sj_cache = require("sj.cache")
+local sj = require("jump")
+local sj_cache = require("jump.cache")
 
 --- Configuration ------------------------------------------------------------------------
 
@@ -154,159 +123,8 @@ sj.setup({
     SjNoMatches =    { bold = false, italic = false, fg = "#DE945A",                 },
     SjOverlay =      { bold = false, italic = false, fg = "#345576",                 },
   },
-
-  keymaps = {
-    send_to_qflist = "<C-q>", --- send search result to the quickfix list
-  },
 })
-
---- Keymaps ------------------------------------------------------------------------------
-
-vim.keymap.set("n", "!", function()
-	sj.run({ select_window = true })
-end)
-
-vim.keymap.set("n", "<A-!>", function()
-	sj.select_window()
-end)
-
---- visible lines -------------------------------------
-
-vim.keymap.set({ "n", "o", "x" }, "S", function()
-  vim.fn.setpos("''", vim.fn.getpos("."))
-  sj.run({
-    forward_search = false,
-  })
-end)
-
-vim.keymap.set({ "n", "o", "x" }, "s", function()
-  vim.fn.setpos("''", vim.fn.getpos("."))
-  sj.run()
-end)
-
-vim.keymap.set("n", "<localleader>c", function()
-  sj.run({
-    max_pattern_length = 1,
-    pattern_type = "lua_plain",
-  })
-end)
-
---- buffer --------------------------------------------
-
-vim.keymap.set("n", "gS", function()
-  vim.fn.setpos("''", vim.fn.getpos("."))
-  sj.run({
-    forward_search = false,
-    search_scope = "buffer",
-    update_search_register = true,
-  })
-end)
-
-vim.keymap.set("n", "gs", function()
-  vim.fn.setpos("''", vim.fn.getpos("."))
-  sj.run({
-    search_scope = "buffer",
-    update_search_register = true,
-  })
-end)
-
---- current line --------------------------------------
-
-vim.keymap.set({ "n", "o", "x" }, "<localleader>l", function()
-  sj.run({
-    auto_jump = true,
-    max_pattern_length = 1,
-    pattern_type = "lua_plain",
-    search_scope = "current_line",
-    use_overlay = false,
-  })
-end)
-
-vim.keymap.set("o", "f", function()
-	sj.run({
-		auto_jump = true,
-		forward_search = true,
-		inclusive = true,
-		max_pattern_length = 1,
-		pattern_type = "lua_plain",
-		search_scope = "current_line", -- works with other scopes
-		use_overlay = false,
-	})
-end)
-
-vim.keymap.set("o", "F", function()
-	sj.run({
-		auto_jump = true,
-		forward_search = false,
-		inclusive = true,
-		max_pattern_length = 1,
-		pattern_type = "lua_plain",
-		search_scope = "current_line", -- works with other scopes
-		use_overlay = false,
-	})
-end)
-
-vim.keymap.set("o", "t", function()
-	sj.run({
-		auto_jump = true,
-		forward_search = true,
-		inclusive = false,
-		max_pattern_length = 1,
-		pattern_type = "lua_plain",
-		search_scope = "current_line", -- works with other scopes
-		use_overlay = false,
-	})
-end)
-
-vim.keymap.set("o", "T", function()
-	sj.run({
-		auto_jump = true,
-		forward_search = false,
-		inclusive = false,
-		max_pattern_length = 1,
-		pattern_type = "lua_plain",
-		search_scope = "current_line", -- works with other scopes
-		use_overlay = false,
-	})
-end)
-
---- prev/next match -----------------------------------
-
-vim.keymap.set("n", "<A-,>", function()
-  sj.prev_match()
-  if sj_cache.options.search_scope:match("^buffer") then
-    vim.cmd("normal! zzzv")
-  end
-end)
-
-vim.keymap.set("n", "<A-;>", function()
-  sj.next_match()
-  if sj_cache.options.search_scope:match("^buffer") then
-    vim.cmd("normal! zzzv")
-  end
-end)
-
---- redo ----------------------------------------------
-
-vim.keymap.set("n", "<localleader>a", function()
-  local relative_labels = sj_cache.options.relative_labels
-  sj.redo({
-    relative_labels = false,
-    max_pattern_length = 1,
-  })
-  sj_cache.options.relative_labels = relative_labels
-end)
-
-vim.keymap.set("n", "<localleader>s", function()
-  sj.redo({
-    relative_labels = true,
-    max_pattern_length = 1,
-  })
-end)
-```	
-
-**DISCLAIMER** : This plugin is not intended to replace the native functions of Neovim. 
-<br>I do not recommend adding keymaps that replaces `/, ?, f/F, t/T...`.
+```
 
 ## Why
 
@@ -331,3 +149,7 @@ contexts, you don't know if you'll have to use a 1, 2 or 3 characters for the la
 
 By using a search pattern with a 1-character label, you already know all the keys except
 one character for the label.
+
+```
+
+```
