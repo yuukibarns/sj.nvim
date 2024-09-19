@@ -1,5 +1,5 @@
 local cache = require("sj.cache")
-local ui = require("sj.ui")
+-- local ui = require("sj.ui")
 local utils = require("sj.utils")
 
 local keymaps = {
@@ -349,7 +349,7 @@ function M.get_user_input()
 	local delete_prev_word_rx = [=[\v[[:keyword:]]\zs[^[:keyword:]]+$|[[:keyword:]]+$]=]
 
 	local win_id = vim.api.nvim_get_current_win()
-	local buf_nr = vim.api.nvim_win_get_buf(win_id)
+	-- local buf_nr = vim.api.nvim_win_get_buf(win_id)
 	local cursor_pos = vim.api.nvim_win_get_cursor(win_id)
 	local view = utils.win_view(win_id)
 
@@ -392,7 +392,7 @@ function M.get_user_input()
 		end
 		labels_map = M.create_labels_map(labels, matches, false)
 		prev_labels_map = labels_map
-		ui.show_feedbacks(buf_nr, pattern, matches, labels_map, labels[labels_slider.pos])
+		-- ui.show_feedbacks(buf_nr, pattern, matches, labels_map, labels[labels_slider.pos])
 	end
 
 	while need_looping == true do
@@ -465,7 +465,7 @@ function M.get_user_input()
 			pattern = last_matching_pattern
 			labels_map = {}
 			prev_labels_map = {}
-			ui.show_feedbacks(buf_nr, user_input, {}, {}, {})
+			-- ui.show_feedbacks(buf_nr, user_input, {}, {}, {})
 		end
 
 		if #matches == 1 and cache.options.auto_jump then
@@ -478,12 +478,12 @@ function M.get_user_input()
 			if cache.options.search_scope == "buffer" then
 				M.jump_to(matches[labels_slider.pos])
 			end
-			ui.show_feedbacks(buf_nr, pattern, matches, labels_map, labels[labels_slider.pos])
+			-- ui.show_feedbacks(buf_nr, pattern, matches, labels_map, labels[labels_slider.pos])
 		end
 
 		---
 	end
-	ui.clear_feedbacks(buf_nr)
+	-- ui.clear_feedbacks(buf_nr)
 
 	cache.state.last_used_pattern = pattern
 	patterns = update_search_history(patterns, pattern)
@@ -517,25 +517,25 @@ end
 
 function M.select_window()
 	local wins_list = utils.tab_list_wins(0)
-	local wins_ctxt = {}
+	-- local wins_ctxt = {}
 	local wins_labels = {}
 
 	for win_nr, win_id in ipairs(wins_list) do
-		local first_line, last_line = M.win_get_lines_range(win_id, "visible_lines")
+		-- local first_line, last_line = M.win_get_lines_range(win_id, "visible_lines")
 		local label = cache.options.labels[win_nr]
 		wins_labels[label] = win_id
-		wins_ctxt[win_id] = {
-			win_id = win_id,
-			buf_nr = vim.api.nvim_win_get_buf(win_id),
-			first_line = first_line,
-			last_line = last_line,
-			label = label,
-		}
+		-- wins_ctxt[win_id] = {
+		-- 	win_id = win_id,
+		-- 	buf_nr = vim.api.nvim_win_get_buf(win_id),
+		-- 	first_line = first_line,
+		-- 	last_line = last_line,
+		-- 	label = label,
+		-- }
 	end
 
-	ui.multi_win_show_indicators(wins_list, wins_ctxt)
+	-- ui.multi_win_show_indicators(wins_list, wins_ctxt)
 	local ok, keynum = pcall(vim.fn.getchar)
-	ui.multi_win_hide_indicators(wins_list, wins_ctxt)
+	-- ui.multi_win_hide_indicators(wins_list, wins_ctxt)
 
 	if not ok then
 		return
