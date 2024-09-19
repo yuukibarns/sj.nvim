@@ -4,72 +4,10 @@ local utils = require("sj.utils")
 
 local keymaps = {
 	cancel = vim.api.nvim_replace_termcodes("<Esc>", true, false, true),
-	-- validate = vim.api.nvim_replace_termcodes("<CR>", true, false, true),
-	-- prev_match = vim.api.nvim_replace_termcodes("<A-,>", true, false, true),
-	-- next_match = vim.api.nvim_replace_termcodes("<A-;>", true, false, true),
-	-- prev_pattern = vim.api.nvim_replace_termcodes("<C-p>", true, false, true),
-	-- next_pattern = vim.api.nvim_replace_termcodes("<C-n>", true, false, true),
 	delete_prev_char = vim.api.nvim_replace_termcodes("<BS>", true, false, true),
-	-- delete_prev_word = vim.api.nvim_replace_termcodes("<C-W>", true, false, true),
-	-- delete_pattern = vim.api.nvim_replace_termcodes("<C-U>", true, false, true),
-	-- restore_pattern = vim.api.nvim_replace_termcodes("<A-BS>", true, false, true),
-	-- send_to_qflist = vim.api.nvim_replace_termcodes("<A-q>", true, false, true),
 }
 
--- local patterns = {}
--- local patterns_slider = utils.slider()
-
 ------------------------------------------------------------------------------------------------------------------------
-
--- local function update_search_register(pattern, pattern_type)
--- 	if type(pattern) ~= "string" or #pattern == 0 then
--- 		return
--- 	end
---
--- 	if pattern_type == "vim_very_magic" then
--- 		pattern = "\\v" .. pattern
--- 	end
---
--- 	vim.fn.setreg("/", pattern)
--- end
-
--- local function send_to_qflist(matches)
--- 	if type(matches) ~= "table" then
--- 		return
--- 	end
---
--- 	local lnum, start_idx, end_idx, line
--- 	local qf_list = {}
--- 	for match_num, match_range in ipairs(matches) do
--- 		lnum, start_idx, end_idx = unpack(match_range)
--- 		line = vim.fn.getline(lnum + 1)
--- 		qf_list[match_num] = {
--- 			text = line,
--- 			bufnr = vim.api.nvim_get_current_buf(),
--- 			lnum = lnum + 1,
--- 			col = start_idx,
--- 			end_col = end_idx,
--- 		}
--- 	end
--- 	vim.fn.setqflist(qf_list)
--- end
-
--- local function update_search_history(current_patterns, new_pattern)
--- 	if type(new_pattern) ~= "string" or #new_pattern == 0 then
--- 		return current_patterns
--- 	end
---
--- 	local new_patterns = {}
---
--- 	for _, pattern in pairs(current_patterns) do
--- 		if pattern ~= new_pattern then
--- 			table.insert(new_patterns, pattern)
--- 		end
--- 	end
--- 	table.insert(new_patterns, new_pattern)
---
--- 	return new_patterns
--- end
 
 local function pattern_ranges(text, pattern, search)
 	local iters, text_len = 0, #text
@@ -128,11 +66,6 @@ end
 
 ---@param user_input string
 local function extract_pattern_and_label(user_input, separator)
-	-- if separator == "" then
-	-- 	return user_input, ""
-	-- elseif type(separator) ~= "string" then
-	-- 	separator = ":"
-	-- end
 	local separator_pos = user_input:match("^.*()" .. vim.pesc(separator))
 
 	if separator_pos then
@@ -219,22 +152,6 @@ function M.win_get_lines_range(win_id, scope)
 
 	return unpack(cases[scope] or cases["visible_lines"])
 end
-
--- function M.discard_labels(labels, matches)
--- 	if type(matches) ~= "table" or #matches == 0 then
--- 		return labels
--- 	end
---
--- 	-- match_range[#match_range]: next character following a match
--- 	local discardable = {}
--- 	for _, match_range in pairs(matches) do
--- 		discardable[match_range[#match_range]] = true
--- 	end
---
--- 	return vim.tbl_filter(function(label)
--- 		return discardable[label] ~= true
--- 	end, labels)
--- end
 
 function M.create_labels_map(labels, matches, reverse)
 	local label
@@ -343,13 +260,10 @@ function M.get_user_input()
 	local keynum, ok, char
 	local separator = cache.options.separator
 	local user_input = ""
-	-- local pattern, label, last_matching_pattern = "", "", ""
 	local pattern, label = "", ""
-	-- local matches, labels_map, prev_labels_map = {}, {}, {}
 	local matches, labels_map = {}, {}
 	local labels = cache.options.labels
 	local need_looping = true
-	-- local delete_prev_word_rx = [=[\v[[:keyword:]]\zs[^[:keyword:]]+$|[[:keyword:]]+$]=]
 
 	local win_id = vim.api.nvim_get_current_win()
 	local buf_nr = vim.api.nvim_win_get_buf(win_id)
@@ -364,16 +278,6 @@ function M.get_user_input()
 		scope = cache.options.search_scope,
 	}
 
-	-- local labels_slider = utils.slider(nil, true)
-	-- labels_slider.move(1)
-
-	-- patterns_slider.move(#patterns + 1)
-
-	-- if cache.options.use_last_pattern == true and type(cache.state.last_used_pattern) == "string" then
-	-- 	user_input = cache.state.last_used_pattern
-	-- elseif #cache.options.pattern > 0 then
-	-- 	user_input = cache.options.pattern
-	-- end
 	if #cache.options.pattern > 0 then
 		user_input = cache.options.pattern
 	end
@@ -393,11 +297,7 @@ function M.get_user_input()
 	end
 
 	if need_looping == true then
-		-- if separator == "" then
-		-- 	labels = M.discard_labels(cache.options.labels, matches)
-		-- end
 		labels_map = M.create_labels_map(labels, matches, false)
-		-- prev_labels_map = labels_map
 		ui.show_feedbacks(buf_nr, pattern, matches, labels_map)
 	end
 
@@ -410,29 +310,8 @@ function M.get_user_input()
 			if char == keymaps.cancel or keynum == keymaps.cancel then
 				user_input, labels_map = "", {}
 				break
-			-- elseif char == keymaps.validate or keynum == keymaps.validate then
-			-- 	break
 			elseif char == keymaps.delete_prev_char or keynum == keymaps.delete_prev_char then
 				user_input = #user_input > 0 and user_input:sub(1, #user_input - 1) or user_input
-			-- 	elseif char == keymaps.delete_prev_word or keynum == keymaps.delete_prev_word then
-			-- 		user_input = vim.fn.substitute(user_input, delete_prev_word_rx, "", "")
-			-- 	elseif char == keymaps.restore_pattern or keynum == keymaps.restore_pattern then
-			-- 		user_input = last_matching_pattern
-			-- 	elseif char == keymaps.delete_pattern or keynum == keymaps.delete_pattern then
-			-- 		user_input = ""
-			-- 	elseif char == keymaps.prev_pattern or keynum == keymaps.prev_pattern then
-			-- 		user_input = patterns[patterns_slider.prev()]
-			-- 	elseif char == keymaps.next_pattern or keynum == keymaps.next_pattern then
-			-- 		user_input = patterns[patterns_slider.next()]
-			-- 	elseif char == keymaps.prev_match or keynum == keymaps.prev_match then
-			-- 		cache.state.label_index = labels_slider.prev()
-			-- 	elseif char == keymaps.next_match or keynum == keymaps.next_match then
-			-- 		cache.state.label_index = labels_slider.next()
-			-- 	elseif char == keymaps.send_to_qflist or keynum == keymaps.send_to_qflist then
-			-- 		send_to_qflist(matches)
-			-- 		break
-			-- 	elseif cache.options.max_pattern_length > 0 and #pattern >= cache.options.max_pattern_length then
-			-- 		user_input = user_input .. separator .. char
 			else
 				user_input = user_input .. char
 			end
@@ -442,26 +321,9 @@ function M.get_user_input()
 
 		pattern, label = extract_pattern_and_label(user_input, separator)
 		matches = M.win_find_pattern(win_id, pattern, search_opts)
-
-		-- if separator == "" then
-		-- 	labels = M.discard_labels(cache.options.labels, matches)
-		-- end
 		labels_map = M.create_labels_map(labels, matches, false)
-		-- labels_slider.set_max(#matches)
-
-		-- local last_char = user_input:sub(#user_input, #user_input)
-		-- if separator == "" and #matches == 0 and vim.tbl_contains(labels, last_char) then
-		-- 	pattern, label = user_input:sub(1, #user_input - 1), last_char
-		-- 	labels_map = prev_labels_map
-		-- end
-		-- prev_labels_map = labels_map
 
 		if #pattern > 0 and #label > 0 then
-			-- local valid_label = vim.tbl_contains(vim.tbl_keys(labels_map), label)
-			-- if valid_label or cache.options.stop_on_fail == true then
-			-- 	break
-			-- end
-			-- matches = {}
 			break
 		end
 
@@ -469,9 +331,7 @@ function M.get_user_input()
 			if cache.options.stop_on_fail == true or char == separator then
 				break
 			end
-			-- pattern = last_matching_pattern
 			labels_map = {}
-			-- prev_labels_map = {}
 			ui.show_feedbacks(buf_nr, user_input, {}, {})
 		end
 
@@ -481,80 +341,18 @@ function M.get_user_input()
 		end
 
 		if #matches > 0 then
-			-- last_matching_pattern = pattern
-			-- if cache.options.search_scope == "buffer" then
-			-- 	M.jump_to(matches[labels_slider.pos])
-			-- end
 			ui.show_feedbacks(buf_nr, pattern, matches, labels_map)
 		end
-
-		---
 	end
+
 	ui.clear_feedbacks(buf_nr)
-
-	-- cache.state.last_used_pattern = pattern
-	-- patterns = update_search_history(patterns, pattern)
-	-- patterns_slider.set_max(#patterns)
-
-	-- if cache.options.update_search_register == true then
-	-- 	update_search_register(cache.state.last_used_pattern, cache.options.pattern_type)
-	-- end
-
-	-- if separator == "" and #label > 0 and labels_map[label] then
-	-- 	M.jump_to(labels_map[label])
-	-- 	return
-	-- end
-
-	-- if char == keymaps.validate or keynum == keymaps.validate then
-	-- 	M.jump_to(labels_map[labels[labels_slider.pos]])
-	-- 	return
-	-- end
 
 	if char == keymaps.cancel or not labels_map[label] then
 		view.restore()
 		return
 	end
 
-	-- if char == keymaps.send_to_qflist or keynum == keymaps.send_to_qflist then
-	-- 	return
-	-- end
-
 	return user_input, labels_map
 end
-
--- function M.select_window()
--- 	local wins_list = utils.tab_list_wins(0)
--- 	local wins_ctxt = {}
--- 	local wins_labels = {}
---
--- 	for win_nr, win_id in ipairs(wins_list) do
--- 		local first_line, last_line = M.win_get_lines_range(win_id, "visible_lines")
--- 		local label = cache.options.labels[win_nr]
--- 		wins_labels[label] = win_id
--- 		wins_ctxt[win_id] = {
--- 			win_id = win_id,
--- 			buf_nr = vim.api.nvim_win_get_buf(win_id),
--- 			first_line = first_line,
--- 			last_line = last_line,
--- 			label = label,
--- 		}
--- 	end
---
--- 	ui.multi_win_show_indicators(wins_list, wins_ctxt)
--- 	local ok, keynum = pcall(vim.fn.getchar)
--- 	ui.multi_win_hide_indicators(wins_list, wins_ctxt)
---
--- 	if not ok then
--- 		return
--- 	end
---
--- 	local label = type(keynum) == "number" and vim.fn.nr2char(keynum) or ""
--- 	local win_id = wins_labels[label]
---
--- 	if win_id then
--- 		vim.api.nvim_set_current_win(win_id)
--- 		return win_id
--- 	end
--- end
 
 return M

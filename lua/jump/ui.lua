@@ -1,5 +1,4 @@
 local cache = require("sj.cache")
--- local utils = require("sj.utils")
 
 local clear_timer
 local augroup = vim.api.nvim_create_augroup("SJ", { clear = true })
@@ -80,49 +79,9 @@ local function apply_overlay(buf_nr, redraw)
 	end
 end
 
--- local function echo_pattern(pattern, matches)
--- 	local highlight = ""
--- 	if pattern ~= nil and #pattern > 0 and type(matches) == "table" and #matches < 1 then
--- 		highlight = "SjNoMatches"
--- 	end
---
--- 	if pattern ~= nil and type(cache.options.prompt_prefix) == "string" then
--- 		pattern = cache.options.prompt_prefix .. pattern
--- 	else
--- 		pattern = ""
--- 	end
---
--- 	vim.api.nvim_echo({ { pattern, highlight } }, false, {})
--- 	vim.cmd("redraw!")
--- end
-
--- local function win_show_indicators(_, buf_nr, first_line, last_line, label)
--- 	vim.api.nvim_buf_set_extmark(buf_nr, namespace, first_line - 1, 0, {
--- 		virt_text = { { label, "SjLimitReached" } },
--- 		virt_text_pos = "overlay",
--- 		virt_text_win_col = -1,
--- 	})
--- 	vim.api.nvim_buf_set_extmark(buf_nr, namespace, first_line - 1, 0, {
--- 		virt_text = { { label, "SjLimitReached" } },
--- 		virt_text_pos = "right_align",
--- 	})
--- 	vim.api.nvim_buf_set_extmark(buf_nr, namespace, last_line - 1, 0, {
--- 		virt_text = { { label, "SjLimitReached" } },
--- 		virt_text_pos = "overlay",
--- 		virt_text_win_col = -1,
--- 	})
--- 	vim.api.nvim_buf_set_extmark(buf_nr, namespace, last_line - 1, 0, {
--- 		virt_text = { { label, "SjLimitReached" } },
--- 		virt_text_pos = "right_align",
--- 	})
--- 	vim.cmd("redraw")
--- end
-
 ------------------------------------------------------------------------------------------------------------------------
 
 function M.manage_highlights(new_highlights, preserve_highlights)
-	-- local buf_nr = vim.api.nvim_get_current_buf()
-
 	replace_highlights(new_highlights)
 
 	if preserve_highlights == true then
@@ -137,21 +96,6 @@ function M.manage_highlights(new_highlights, preserve_highlights)
 	else
 		vim.api.nvim_clear_autocmds({ group = augroup, event = "ColorScheme" })
 	end
-
-	-- vim.api.nvim_create_autocmd({ "CursorHold", "ModeChanged" }, {
-	-- 	group = augroup,
-	-- 	pattern = "*",
-	-- 	desc = "Clear highlights when the cursor stopped moving for a while or the mode changed",
-	-- 	callback = function(args)
-	-- 		if args.event == "CursorHold" and cache.options.highlights_timeout > 0 then
-	-- 			clear_timer = vim.defer_fn(function()
-	-- 				clear_highlights(buf_nr)
-	-- 			end, cache.options.highlights_timeout)
-	-- 		else
-	-- 			clear_highlights(buf_nr)
-	-- 		end
-	-- 	end,
-	-- })
 end
 
 function M.highlight_matches(buf_nr, labels_map, pattern, show_labels)
@@ -212,21 +156,5 @@ function M.cancel_highlights_timer()
 		end)
 	end
 end
-
--- function M.multi_win_show_indicators(wins_list, wins_ctxt)
--- 	local c
--- 	utils.multi_win_call(wins_list, function(win_id)
--- 		c = wins_ctxt[win_id]
--- 		win_show_indicators(win_id, c.buf_nr, c.first_line, c.last_line, c.label)
--- 	end)
--- end
---
--- function M.multi_win_hide_indicators(wins_list, wins_ctxt)
--- 	local c
--- 	utils.multi_win_call(wins_list, function(win_id)
--- 		c = wins_ctxt[win_id]
--- 		clear_highlights(c.buf_nr)
--- 	end)
--- end
 
 return M
