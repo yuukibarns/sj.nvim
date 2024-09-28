@@ -188,7 +188,6 @@ function M.win_find_pattern(win_id, pattern, opts)
 		cursor_pos = vim.api.nvim_win_get_cursor(win_id),
 		forward = true,
 		pattern_type = "vim",
-		relative = false,
 		scope = "visible_lines",
 	}
 	opts = vim.tbl_extend("force", default_opts, type(opts) == "table" and opts or {})
@@ -205,7 +204,6 @@ function M.win_find_pattern(win_id, pattern, opts)
 	local cursor_lnum, cursor_col = opts.cursor_pos[1], opts.cursor_pos[2] + 1
 
 	local forward = opts.forward == true
-	local relative = opts.relative == true
 
 	local match_lnum, match_col, match_end_col, match_text, match_next_chars
 	local prev_matches, next_matches = {}, {}
@@ -243,14 +241,10 @@ function M.win_find_pattern(win_id, pattern, opts)
 
 	local matches = {}
 
-	if relative == false and forward == false then
-		matches = utils.list_reverse(utils.list_extend(prev_matches, next_matches))
-	elseif relative == false and forward == true then
-		matches = utils.list_extend(prev_matches, next_matches)
-	elseif relative == true and forward == false then
-		matches = utils.list_extend(utils.list_reverse(prev_matches), utils.list_reverse(next_matches))
-	elseif relative == true and forward == true then
-		matches = utils.list_extend(next_matches, prev_matches)
+	if forward == true then
+		matches = utils.list_extend(next_matches, utils.list_reverse(prev_matches))
+	else
+		matches = utils.list_extend(utils.list_reverse(prev_matches), next_matches)
 	end
 
 	return matches
@@ -274,7 +268,6 @@ function M.get_user_input()
 		cursor_pos = cursor_pos, -- needed here to avoid "sliding matches" while typing the pattern
 		forward = cache.options.forward_search,
 		pattern_type = cache.options.pattern_type,
-		relative = cache.options.relative_labels,
 		scope = cache.options.search_scope,
 	}
 

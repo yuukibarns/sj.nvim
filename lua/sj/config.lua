@@ -62,7 +62,6 @@ end
 
 local checks = {
 	auto_jump = { func = is_boolean, message = "must be a boolean" },
-	forward_search = { func = is_boolean, message = "must be a boolean" },
 	highlights = { func = valid_highlights, message = "must be a table with tables as values" },
 	inclusive = { func = is_boolean, message = "must be a boolean" },
 	keymaps = { func = valid_keymaps, message = "must be a table with string as values" },
@@ -72,7 +71,6 @@ local checks = {
 	pattern_type = { func = is_string, message = "must be a string" },
 	preserve_highlights = { func = is_boolean, message = "must be a boolean" },
 	prompt_prefix = { func = is_string, message = "must be a string" },
-	relative_labels = { func = is_boolean, message = "must be a boolean" },
 	search_scope = { func = is_string, message = "must be a string" },
 	separator = { func = is_string_and_not_empty, message = "must be a nonempty string" },
 	stop_on_fail = { func = is_boolean, message = "must be a boolean" },
@@ -82,14 +80,12 @@ local checks = {
 local M = {
 	defaults = {
 		auto_jump = false, -- if true, automatically jump on the sole match
-		forward_search = true, -- if true, the search will be done from top to bottom
 		inclusive = true, -- if true, the jump target will be included with 'operator-pending' and 'visual' modes
 		max_pattern_length = 0, -- if > 0, wait for a label after N characters
 		pattern = "", -- predefined pattern to use at the start of a search
 		pattern_type = "vim", -- how to interpret the pattern (lua_plain, lua, vim, vim_very_magic)
 		preserve_highlights = true, -- if true, create an autocmd to preserve highlights when switching colorscheme
 		prompt_prefix = "", -- if set, the string will be used as a prefix in the command line
-		relative_labels = false, -- if true, labels are ordered from the cursor position, not from the top of the buffer
 		search_scope = "visible_lines", -- (current_line, visible_lines_above, visible_lines_below, visible_lines)
 		separator = ":", -- character used to split the user input in <pattern> and <label> (should not be empty)
 		stop_on_fail = true, -- if true, the search will stop when a search fails (no matches), if false, when there are no match type the separator will end the search.

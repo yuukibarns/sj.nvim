@@ -38,7 +38,8 @@ To start using SJ, you can add the lines below in your configuration for Neovim.
 local sj = require("sj")
 sj.setup()
 
-vim.keymap.set("n", "s", sj.run)
+vim.keymap.set({"n","v"}, "f", sj.search_forward)
+vim.keymap.set({"n","v"}, "F", sj.search_backward)
 ```
 
 As soon as you use the keymap assigned to `sj.run()` and start typing the pattern :
@@ -60,14 +61,12 @@ Here is the default configuration :
 ```lua
 defaults = {
 		auto_jump = false, -- if true, automatically jump on the sole match
-		forward_search = true, -- if true, the search will be done from top to bottom
 		inclusive = true, -- if true, the jump target will be included with 'operator-pending' and 'visual' modes
 		max_pattern_length = 0, -- if > 0, wait for a label after N characters
 		pattern = "", -- predefined pattern to use at the start of a search
 		pattern_type = "vim", -- how to interpret the pattern (lua_plain, lua, vim, vim_very_magic)
 		preserve_highlights = true, -- if true, create an autocmd to preserve highlights when switching colorscheme
 		prompt_prefix = "", -- if set, the string will be used as a prefix in the command line
-		relative_labels = false, -- if true, labels are ordered from the cursor position, not from the top of the buffer
 		search_scope = "visible_lines", -- (current_line, visible_lines_above, visible_lines_below, visible_lines)
 		separator = ":", -- character used to split the user input in <pattern> and <label> (should not be empty)
 		stop_on_fail = true, -- if true, the search will stop when a search fails (no matches), if false, when there are no match type the separator will end the search.
